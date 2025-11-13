@@ -13,7 +13,8 @@ public class PersonQueue
     /// <param name="person">The person to add</param>
     public void Enqueue(Person person)
     {
-        _queue.Insert(0, person);
+        // _queue.Insert(0, person);   // This method acted like stack. So instead of using Insert(0, person),
+        _queue.Add(person);            // Add(person) is used to obey the FIFO logic.
     }
 
     public Person Dequeue()
