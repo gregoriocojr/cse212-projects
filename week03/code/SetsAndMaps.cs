@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 
 public static class SetsAndMaps
@@ -22,7 +23,38 @@ public static class SetsAndMaps
     public static string[] FindPairs(string[] words)
     {
         // TODO Problem 1 - ADD YOUR CODE HERE
-        return [];
+
+        if (words == null || words.Length == 0)     // Handles empty set.
+        {
+            return Array.Empty<string>();
+        }
+
+        var seen = new HashSet<string>();   // HashSet to store seen words. 
+        var result = new List<string>();    // 'result' will contain pairs of words.
+
+        foreach (var w in words)       // Iterate through each word (w) in the 'words'.
+        {
+            if (string.IsNullOrEmpty(w) || w.Length != 2)   // Error handling when the length of a 'word' in 'words' is not equal to 2.
+            {
+                continue;
+            }
+
+            if (w[0] == w[1])   // Handles special case for a word with same letters.
+            {
+                continue;
+            }
+
+            string rev = new string(new[] { w[1], w[0] });  // Determines the reverse (rev) of the 2-character word in words.
+            if (seen.Contains(rev))     // If rev is already seen, then there is a symmetric pair.
+            {
+                result.Add($"{w} & {rev}"); // Add the pair in the 'result'.
+            }
+            else
+            {
+                seen.Add(w);    // Handles the characteristic of a set that order does not matter.
+            }
+        }
+        return result.ToArray();
     }
 
     /// <summary>
@@ -43,8 +75,17 @@ public static class SetsAndMaps
         {
             var fields = line.Split(",");
             // TODO Problem 2 - ADD YOUR CODE HERE
-        }
 
+            var degree = fields[3].Trim();      // Trim whitespace in the 4th column where the degree is.
+            if (degrees.TryGetValue(degree, out var count)) // Tally the degree.
+            {
+                degrees[degree] = count + 1;
+            }
+            else
+            {
+                degrees[degree] = 1;    // If a degree appeared once.
+            }
+        }
         return degrees;
     }
 
@@ -67,7 +108,48 @@ public static class SetsAndMaps
     public static bool IsAnagram(string word1, string word2)
     {
         // TODO Problem 3 - ADD YOUR CODE HERE
-        return false;
+
+        var counts = new Dictionary<char, int>();
+
+        int len1 = 0;   // Effective length of word1.
+        foreach (char ch in word1)
+        {
+            if (char.IsWhiteSpace(ch))  // Ignore all whitespace.
+            {
+                continue;
+            }
+            char c = char.ToLowerInvariant(ch); // Ignore letter case.
+            counts.TryGetValue(c, out int cur); // Increment count of characters in word1.
+            counts[c] = cur + 1;
+            len1++;
+        }
+
+        int len2 = 0;   // Effective length of word2.
+        foreach (char ch in word2)
+        {
+            if (char.IsWhiteSpace(ch))
+            {
+                continue;
+            }
+            char c = char.ToLowerInvariant(ch);
+            counts.TryGetValue(c, out int cur); // Decrement count of characters in word2.
+            counts[c] = cur - 1;
+            len2++;
+        }
+
+        if (len1 != len2)   // Handles immediately different effective lengths.
+        {
+            return false;
+        }
+
+        foreach (var kvp in counts) // Checks difference in occurence of letters. 
+        {                           // Key value pairs (kvp) should always be equal to zero.
+            if (kvp.Value != 0)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     /// <summary>
@@ -101,6 +183,29 @@ public static class SetsAndMaps
         // on those classes so that the call to Deserialize above works properly.
         // 2. Add code below to create a string out each place a earthquake has happened today and its magitude.
         // 3. Return an array of these string descriptions.
-        return [];
+
+        var lines = new List<string>();     // Build the output.
+
+        if (featureCollection?.Features != null)
+        {
+            foreach (var feature in featureCollection.Features)
+            {
+                if (feature?.Properties == null)    // Skip if feature or its properties are missing.
+                {
+                    continue;
+                }
+                string? place = feature.Properties.Place;
+                double? mag = feature.Properties.Mag;
+
+                if (string.IsNullOrWhiteSpace(place) || !mag.HasValue)  // Skip entries that don't have both a place and a magnitude.
+                {
+                    continue;
+                }
+                string magText = mag.Value.ToString("0.##", CultureInfo.InvariantCulture);  // Format magnitude with dot decimal and up to 2 decimals.
+
+                lines.Add(place + " - Mag " + magText); // Build the required format.
+            }
+        } 
+        return lines.ToArray();
     }
 }

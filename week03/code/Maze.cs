@@ -33,6 +33,12 @@ public class Maze
     public void MoveLeft()
     {
         // FILL IN CODE
+        var key = (_currX, _currY); // Look up allowed moves for the current position.
+        if (!_mazeMap.TryGetValue(key, out var moves) || moves.Length != 4 || !moves[0])    // Check the invalid moves, then throw error message.
+        {
+            throw new InvalidOperationException("Can't go that way!");
+        }
+        _currX -= 1;    // When move is allowed, decrease X by 1.
     }
 
     /// <summary>
@@ -42,6 +48,12 @@ public class Maze
     public void MoveRight()
     {
         // FILL IN CODE
+        var key = (_currX, _currY);
+        if (!_mazeMap.TryGetValue(key, out var moves) || moves.Length != 4 || !moves[1])
+        {
+            throw new InvalidOperationException("Can't go that way!");
+        }
+        _currX += 1;    // When move is allowed, increase X by 1.
     }
 
     /// <summary>
@@ -51,6 +63,12 @@ public class Maze
     public void MoveUp()
     {
         // FILL IN CODE
+        var key = (_currX, _currY);
+        if (!_mazeMap.TryGetValue(key, out var moves) || moves.Length != 4 || !moves[2])
+        {
+            throw new InvalidOperationException("Can't go that way!");
+        }
+        _currY -= 1;    // When move is allowed, decrease Y by 1.
     }
 
     /// <summary>
@@ -60,6 +78,12 @@ public class Maze
     public void MoveDown()
     {
         // FILL IN CODE
+        var key = (_currX, _currY);
+        if (!_mazeMap.TryGetValue(key, out var moves) || moves.Length != 4 || !moves[3])
+        {
+            throw new InvalidOperationException("Can't go that way!");
+        }
+        _currY += 1;    // When move is allowed, increase Y by 1.
     }
 
     public string GetStatus()
