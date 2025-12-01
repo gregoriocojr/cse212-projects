@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Security.Cryptography.X509Certificates;
 
 public static class Recursion
 {
@@ -15,7 +16,16 @@ public static class Recursion
     public static int SumSquaresRecursive(int n)
     {
         // TODO Start Problem 1
-        return 0;
+        if (n <= 0) // Base, excluding zero and non-zero.
+        {
+            return 0;
+        }
+        else
+        {
+            // Sum of Squares = n^2 + (n - 1)^2 + ... + 2^2 + 1^2.
+            // S(n) = n^2 + S(n - 1)
+            return n * n + SumSquaresRecursive(n - 1);
+        }
     }
 
     /// <summary>
@@ -40,6 +50,23 @@ public static class Recursion
     public static void PermutationsChoose(List<string> results, string letters, int size, string word = "")
     {
         // TODO Start Problem 2
+        if (word.Length == size)    // Base case, when size is equal to length of the word, record it.
+        {
+            results.Add(word);
+            return;
+        }
+
+        for (int i = 0; i < letters.Length; i++)    // Pick the next letter from the unused in the 'word'.
+        {
+            char chosen = letters[i];   // Iterate over 'letters' and add letter that isn't already in 'word'.
+
+            if (word.IndexOf(chosen) != -1) // Skip the letter that is already chosen.
+            {
+                continue;
+            }
+            // Get 'chosen' and recurse.
+            PermutationsChoose(results, letters, size, word + chosen);
+        }
     }
 
     /// <summary>
@@ -86,20 +113,34 @@ public static class Recursion
     /// </summary>
     public static decimal CountWaysToClimb(int s, Dictionary<int, decimal>? remember = null)
     {
+
+        // Initialize dictionary.
+        remember ??= new Dictionary<int, decimal>();
+
+        if (remember.TryGetValue(s, out var cached))
+            return cached;
+
+        decimal ways;
+
         // Base Cases
         if (s == 0)
             return 0;
-        if (s == 1)
+        else if (s == 1)
             return 1;
-        if (s == 2)
+        else if (s == 2)
             return 2;
-        if (s == 3)
+        else if (s == 3)
             return 4;
-
-        // TODO Start Problem 3
-
-        // Solve using recursion
-        decimal ways = CountWaysToClimb(s - 1) + CountWaysToClimb(s - 2) + CountWaysToClimb(s - 3);
+        else
+        {
+            // Solve using recursion, and pass with the memoization.
+            ways =
+                CountWaysToClimb(s - 1, remember) +
+                CountWaysToClimb(s - 2, remember) +
+                CountWaysToClimb(s - 3, remember);
+        }
+        // Cache and return.
+        remember[s] = ways;
         return ways;
     }
 
@@ -119,6 +160,24 @@ public static class Recursion
     public static void WildcardBinary(string pattern, List<string> results)
     {
         // TODO Start Problem 4
+
+        int starIndex = pattern.IndexOf('*');
+        if (starIndex == -1)    // Base case, where there is no '*'.
+        {
+            results.Add(pattern);
+            return;
+        }
+        // Recursive cases:
+
+        // Building a new string by replacing '*' with 0.
+        string withZero = pattern.Substring(0, starIndex) + '0' + pattern.Substring(starIndex + 1);
+
+        // Building a new string by replacing '*' with 1.
+        string withOne = pattern.Substring(0, starIndex) + '1' + pattern.Substring(starIndex + 1);
+
+        // Recurse on both cases.
+        WildcardBinary(withZero, results);
+        WildcardBinary(withOne, results);
     }
 
     /// <summary>
