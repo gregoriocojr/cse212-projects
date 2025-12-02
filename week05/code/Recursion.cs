@@ -188,15 +188,32 @@ public static class Recursion
     {
         // If this is the first time running the function, then we need
         // to initialize the currPath list.
-        if (currPath == null) {
+        if (currPath == null)
+        {
             currPath = new List<ValueTuple<int, int>>();
         }
-        
-        // currPath.Add((1,2)); // Use this syntax to add to the current path
 
         // TODO Start Problem 5
         // ADD CODE HERE
 
-        // results.Add(currPath.AsString()); // Use this to add your path to the results array keeping track of complete maze solutions when you find the solution.
+        if (!maze.IsValidMove(currPath, x, y))  // Check if move is valid.
+            return;
+
+        currPath.Add((x, y));   // If valid, add this cell to the current path.
+
+        if (maze.IsEnd(x, y))   // Checks if it is the end of the maze.
+        {
+            results.Add(currPath.AsString());   // If yes, records the path in string form as required.
+
+            currPath.RemoveAt(currPath.Count - 1);  // If no, remove the last step before returning.
+            return;
+        }
+        //  Recurse through the four movements.
+        SolveMaze(results, maze, x + 1, y, currPath);   // Move to the right.
+        SolveMaze(results, maze, x - 1, y, currPath);   // Move to the left.
+        SolveMaze(results, maze, x, y + 1, currPath);   // Move down.
+        SolveMaze(results, maze, x, y - 1, currPath);   // Move up.
+
+        currPath.RemoveAt(currPath.Count - 1);  // Returns to the previous location before trying other branches.
     }
 }
