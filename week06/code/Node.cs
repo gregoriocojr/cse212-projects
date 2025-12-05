@@ -13,6 +13,9 @@ public class Node
     {
         // TODO Start Problem 1
 
+        if (value == Data)  // Handles duplicate: if value already exist, do nothing.
+            return;
+
         if (value < Data)
         {
             // Insert to the left
@@ -34,12 +37,35 @@ public class Node
     public bool Contains(int value)
     {
         // TODO Start Problem 2
-        return false;
+
+        if (value == Data)  // Base case of the recursion.
+            return true;
+
+        // Start searching on the left subtree if value is smaller.
+        if (value < Data)
+            return Left is not null && Left.Contains(value);
+
+        // Otherwise, search the right subtree.
+        return Right is not null && Right.Contains(value);
     }
 
     public int GetHeight()
     {
         // TODO Start Problem 4
-        return 0; // Replace this line with the correct return statement(s)
+
+        // Declare variables for left and right heights
+        int leftHeight = 0;
+        int rightHeight = 0;
+
+        // Check the height of the left subtree.
+        if (Left != null)
+            leftHeight = Left.GetHeight();
+
+        // Check the height of the right subtree.
+        if (Right != null)
+            rightHeight = Right.GetHeight();
+
+        // Get the higher height and add 1. That's the height of the tree.
+        return 1 + Math.Max (leftHeight, rightHeight);
     }
 }
